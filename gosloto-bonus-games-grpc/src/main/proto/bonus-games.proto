@@ -1,0 +1,268 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.bonus.games.grpc";
+option java_multiple_files = true;
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/struct.proto";
+import "google/protobuf/wrappers.proto";
+import "gosloto-games-model.proto";
+
+message GameTypeResponseGrpc {
+  string gameType = 1;
+  bool visible = 2;
+  NullableString smallIcon = 3;
+  NullableString bigIcon = 4;
+  NullableString smallHover = 5;
+  NullableString gameUrl = 6;
+  NullableString mpIcon = 7;
+  NullableString rules = 8;
+  NullableString title = 9;
+  int32 order = 10;
+  string gameSpec = 11;
+  NullableInteger prize = 12;
+  NullableInteger currency = 13;
+  NullableInteger puzzle = 14;
+  NullableString puzzleColor = 15;
+  NullableInteger price = 16;
+}
+
+message AvailableBonusGamesResponse {
+  repeated GameTypeResponseGrpc games = 1;
+}
+
+message GetBonusGameConfigRequest {
+  NullableLong userId = 1;
+  string gameType = 2;
+}
+
+message BonusGameConfigOrLastSessionResponse {
+  NullableString sessionUUID = 1;
+  NullableLastSession lastSession = 2;
+  NullableGameConfig gameConfig = 4;
+}
+
+message NullableLastSession {
+  oneof val {
+    LastSession value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message LastSession {
+  string sessionUUID = 1;
+  NullableInt modeNumber = 2;
+  NullableInt price = 3;
+  NullableIntegerList prizes = 4;
+  map<int32, int32> scale = 5;
+  repeated ConsumableGrpc consumables = 6;
+}
+
+// Расходный элемент (ресурс)
+message ConsumableGrpc {
+  // Идентификатор
+  NullableLong id = 1;
+  // Описание
+  NullableString name = 2;
+  // Стоимость в бонусных баллах
+  NullableLong price = 3;
+  // Признак доступности
+  bool available = 4;
+  // Количество клеток, заполняемых на шкале прогресса при применении
+  NullableInt weight = 5;
+  // Ссылка на изображение
+  NullableString iconUrl = 6;
+}
+
+message NullableGameConfig {
+  oneof val {
+    GameConfig value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message GameConfig {
+  string gameType = 1;
+  repeated GameModeResponseGrpc modes = 2;
+}
+
+message GameModeResponseGrpc {
+  int32 modeNumber = 1;
+  repeated PriceAndScaleOfModeGrpc priceAndScale = 2;
+  NullableString description = 3;
+}
+
+message PriceAndScaleOfModeGrpc {
+  int32 price = 1;
+  map<int32, int32> scale = 2;
+}
+
+message BonusGameBuyRequest {
+  int64 userId = 1;
+  string mobile = 2;
+  string gameType = 3;
+  NullableInt mode = 4;
+  NullableInt price = 5;
+  string devicePlatform = 6;
+  NullableBonusGameBuyDataRequest gameData = 8;
+  NullableString consumableId = 9;
+  NullableString sessionUUID = 10;
+}
+
+message NullableBonusGameBuyDataRequest {
+  oneof val {
+    BonusGameBuyDataRequest value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message BonusGameBuyDataRequest {
+  int32 multiplier = 1;
+  repeated BonusGameBuyCouponRequest coupons = 2;
+}
+
+message BonusGameBuyCouponRequest {
+  repeated int32 combination = 1;
+  repeated int32 extraCombination = 2;
+  NullableString parity = 3;
+}
+
+message BonusGameBuyStatusGrpc {
+  StatusGrpc status = 1;
+  NullableString error = 2;
+  NullableString sessionUUID = 3;
+  repeated ConsumableGrpc consumables = 4;
+}
+
+enum StatusGrpc {
+    WAITING = 0;
+    IN_PROGRESS = 1;
+    SUCCESS = 2;
+    ERROR = 3;
+}
+
+message BonusGameBuyStatusRequest {
+  int64 userId = 1;
+  string uuid = 2;
+}
+
+message BonusGamePlayRequest {
+  int64 userId = 1;
+  string uuid = 2;
+  NullableInt mode = 3;
+}
+
+message BonusGamePlayStatusGrpc {
+  StatusGrpc status = 1;
+  NullableString error = 2;
+  NullableIntegerList prizes = 3;
+  NullableString sessionUUID = 4;
+  map<int32, int32> scale = 5;
+  repeated ConsumableGrpc consumables = 6;
+}
+
+message BonusGameCompleteRequest {
+  int64 userId = 1;
+  string uuid = 2;
+  NullableBoolean isWin = 3;
+  string mobile = 4;
+  int32 score = 5;
+  int32 avscore = 6;
+}
+
+message GameCompleteResultGrpc {
+  int32 totalPrize = 1;
+  NullableString error = 2;
+  StatusGrpc status = 3;
+  NullableRewardsGrpc rewards = 4;
+  NullableTicketsGrpc tickets = 5;
+}
+
+message NullableTicketsGrpc {
+  oneof val {
+    TicketsGrpc tickets = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message TicketsGrpc {
+  repeated TicketGrpc tickets = 1;
+}
+
+message TicketGrpc {
+  repeated RewardGrpc rewards = 1;
+  int32 totalPrize = 2;
+  TicketDataGrpc data = 3;
+  DrawInfoGrpc drawInfo = 4;
+}
+
+message TicketDataGrpc {
+  int32 multiplier = 1;
+  NullableTicketDataCombinationsGrpc combinations = 2;
+}
+
+message NullableTicketDataCombinationsGrpc {
+  oneof val {
+    TicketDataCombinationsGrpc combinations = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message TicketDataCombinationsGrpc {
+  repeated int32 numbers = 1;
+  repeated int32 extraNumbers = 2;
+  NullableString parity = 3;
+}
+
+message DrawInfoGrpc {
+  string parity = 1;
+  repeated int32 played = 2;
+}
+
+message GetUserCollectionRequest {
+  int64 userId = 1;
+  NullableString rarityType = 2;
+}
+
+message GetUserCollectionResponse {
+  repeated GetUserCollectionElement GetUserCollectionElements = 1;
+}
+
+message GetUserCollectionElement {
+  google.protobuf.Timestamp createDate = 1;
+  int64 puzzleID = 2;
+  string puzzleURL = 3;
+  string gameType = 4;
+  string rarity = 5;
+  int32 prize = 6;
+  string name = 7;
+  string type = 8;
+  int32 collected = 9;
+  bool status = 10;
+  repeated BonusGameCollectionItem puzzleItems = 11;
+}
+
+message BonusGameCollectionItem {
+  int64 id = 1;
+  string url = 2;
+  int32 puzzleItemId = 3;
+}
+
+message BonusGameTransferStatusGrpc {
+  StatusGrpc status = 1;
+  NullableString error = 2;
+}
+
+
+service GrpcBonusGameService {
+  rpc getAvailableBonusGames(google.protobuf.Empty) returns (AvailableBonusGamesResponse);
+  rpc getBonusGames(google.protobuf.Empty) returns (stream google.protobuf.StringValue);
+  rpc getBonusGameConfig(GetBonusGameConfigRequest) returns(BonusGameConfigOrLastSessionResponse);
+  rpc buy(BonusGameBuyRequest) returns(BonusGameBuyStatusGrpc);
+  rpc buyStatus(BonusGameBuyStatusRequest) returns(BonusGameBuyStatusGrpc);
+  rpc play(BonusGamePlayRequest) returns (BonusGamePlayStatusGrpc);
+  rpc playStatus(BonusGamePlayRequest) returns(BonusGamePlayStatusGrpc);
+  rpc complete(BonusGameCompleteRequest) returns(GameCompleteResultGrpc);
+  rpc getUserCollection(GetUserCollectionRequest) returns(GetUserCollectionResponse);
+  rpc transferStatus(BonusGamePlayRequest) returns(BonusGameTransferStatusGrpc);
+}

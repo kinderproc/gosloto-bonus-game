@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.bonus.games.grpc";
+option java_multiple_files = true;
+import "google/protobuf/wrappers.proto";
+import "gosloto-games-model.proto";
+
+message PuzzleSearchRequestGrpc {
+  int32 offset = 1;
+  int32 limit = 2;
+  optional string searchString = 3;
+  optional string rarity = 4;
+}
+
+message PuzzleGrpc {
+  int64 id = 1;
+  NullableString gameType = 2;
+  string url = 3;
+  string name = 4;
+  string rarity = 5;
+  int32 prize = 6;
+  string type = 7;
+  NullableInt collected = 8;
+  NullableBoolean status = 9;
+}
+
+message PuzzleRequestGrpc {
+  string name = 1;
+  string type = 2;
+  NullableString gameType = 3;
+  string rarity = 4;
+  string url = 5;
+  int32 prize = 6;
+}
+
+message UpdatePuzzleRequestGrpc {
+  int64 puzzleId = 1;
+  PuzzleRequestGrpc payload = 2;
+}
+
+service PuzzleService {
+  rpc search(PuzzleSearchRequestGrpc) returns (stream PuzzleGrpc);
+
+  rpc getPuzzle(google.protobuf.Int64Value) returns (PuzzleGrpc);
+
+  rpc save(PuzzleRequestGrpc) returns (NullableLong);
+
+  rpc update(UpdatePuzzleRequestGrpc) returns (NullableInt);
+
+  rpc updateById(PuzzleGrpc) returns (NullableLong);
+}

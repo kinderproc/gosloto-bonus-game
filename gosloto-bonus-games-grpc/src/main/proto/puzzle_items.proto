@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.bonus.games.grpc";
+option java_multiple_files = true;
+import "google/protobuf/empty.proto";
+import "gosloto-games-model.proto";
+
+message PuzzleItemGrpc {
+  int64 id = 1;
+  int32 position = 2;
+  int64 puzzleId = 3;
+  string url = 4;
+}
+
+message PuzzleItemRequestGrpc {
+  int32 puzzleItemId = 1;
+  string url = 2;
+}
+
+message SavePuzzleItemsRequestGrpc {
+  int64 puzzleId = 1;
+  repeated PuzzleItemRequestGrpc items = 2;
+}
+
+message UpdatePuzzleItemsRequestGrpc {
+  int64 puzzleId = 1;
+  repeated PuzzleItemRequestGrpc items = 2;
+}
+
+message UpdatePuzzleItemByIdRequestGrpc {
+  PuzzleItemGrpc item = 1;
+}
+
+message GetByIdRequestGrpc {
+  int64 id = 1;
+}
+
+service PuzzleItemService {
+  rpc save(SavePuzzleItemsRequestGrpc) returns (google.protobuf.Empty);
+
+  rpc create(PuzzleItemGrpc) returns (NullableLong);
+
+  rpc getItems(NullableLong) returns (stream PuzzleItemGrpc);
+
+  rpc update(UpdatePuzzleItemsRequestGrpc) returns (NullableLong);
+
+  rpc updateById(UpdatePuzzleItemByIdRequestGrpc) returns (NullableLong);
+
+  rpc getById(GetByIdRequestGrpc) returns (PuzzleItemGrpc);
+}

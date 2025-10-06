@@ -1,0 +1,129 @@
+image: docker.finch.fm:5000/dev-ops/java-image-ci:17
+
+cache:
+  paths:
+    - .m2/
+stages:
+  - compile
+  - test
+  - deploy
+  - sync
+
+
+compile:
+  tags:
+    - builder
+    - worker
+  stage: compile
+  script:
+    - chmod -R 755 gitlab
+    - ./gitlab/compile.sh || ./gitlab/report.sh error
+  only:
+    - testing
+    - qa
+    - master
+    - /^release-.+$/
+
+test:
+  tags:
+    - builder
+    - worker
+  stage: test
+  script:
+    - chmod -R 755 gitlab
+    - ./gitlab/test.sh || ./gitlab/report.sh error
+  only:
+    - testing
+    - qa
+    - master
+    - /^release-.+$/
+
+
+deploy:
+  stage: deploy
+  before_script:
+    - docker login -u gitlab-ci-token -p $CI_BUILD_TOKEN docker.finch.fm:5000
+  services:
+    - docker:dind
+  tags:
+    - builder
+    - worker
+  script:
+    - chmod -R 755 gitlab
+    - gitlab/deploy.sh $CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME gosloto-files $CI_PIPELINE_ID || gitlab/report.sh error
+  only:
+    - testing
+    - qa
+    - master
+    - /^release-.+$/
+
+auto-sync-gt:
+  image: docker.finch.fm:5000/dev-ops/ansible-ci:37552
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_SYNC_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  stage: sync
+  tags:
+    - builder
+    - worker
+  script:
+    - chmod 775 gitlab/*.sh
+    - gitlab/sync.sh gt && ./gitlab/report.sh ok || ./gitlab/report.sh error
+  only:
+    - testing
+  dependencies:
+    - deploy
+
+.sync:
+  image: docker.finch.fm:5000/dev-ops/ansible-ci:37552
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - echo "$SSH_SYNC_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+  stage: sync
+  tags:
+    - builder
+    - worker
+  script:
+    - chmod 775 gitlab/*.sh
+    - gitlab/sync.sh && ./gitlab/report.sh ok || ./gitlab/report.sh error
+  only:
+    - testing
+    - master
+    - qa
+    - /^release-.+$/
+  dependencies:
+    - deploy
+
+sync-gt:
+  extends: .sync
+  variables:
+    SYNC_ENV: gt
+    SYNC_REPORT_MSG: SYNC gt
+  when: manual
+
+sync-tifa:
+  extends: .sync
+  variables:
+    SYNC_ENV: tifa
+    SYNC_REPORT_MSG: SYNC TIFA
+  when: manual
+
+sync-tli:
+  extends: .sync
+  variables:
+    SYNC_ENV: tli
+    SYNC_REPORT_MSG: SYNC TLI
+  when: manual
+
+sync-local:
+  extends: .sync
+  variables:
+    SYNC_ENV: prod
+    SYNC_REPORT_MSG: SYNC PROD
+  when: manual

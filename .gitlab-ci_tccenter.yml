@@ -1,0 +1,4 @@
+include:
+  - project: 'tc-center/develop/site/devops/umbrella'
+    ref: master
+    file: '/ci/.gitlab-ci-docker.yml'

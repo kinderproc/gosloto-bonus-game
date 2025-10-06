@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.orglot</groupId>
+    <artifactId>gosloto-bonus-games</artifactId>
+    <version>STLT-30356-SNAPSHOT</version>
+  </parent>
+  <artifactId>gosloto-bonus-games-client</artifactId>
+  <dependencies>
+    <dependency>
+      <groupId>org.orglot</groupId>
+      <artifactId>gosloto-rest-starter</artifactId>
+      <version>1.0.4.5</version>
+      <exclusions>
+        <exclusion>
+          <groupId>io.projectreactor.netty</groupId>
+          <artifactId>reactor-netty-http</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.orglot</groupId>
+      <artifactId>gosloto-bonus-games-model</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.orglot</groupId>
+      <artifactId>gosloto-bonus-games-grpc</artifactId>
+      <version>${project.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.orglot</groupId>
+      <artifactId>gosloto-grpc-client-starter</artifactId>
+      <version>1.0.5.3</version>
+    </dependency>
+  </dependencies>
+</project>

@@ -1,0 +1,401 @@
+server:
+  max-http-request-header-size: 65536
+  port: 8081
+  jetty:
+    connection-idle-timeout: 2000
+    max-http-form-post-size: 140000000
+    threads:
+      idle-timeout: 30000
+      max: ${JETTY_MAX_THREADS:200}
+      min: ${JETTY_MIN_THREADS:10}
+      max-queue-capacity: ${JETTY_QUEUE_SIZE:5000}
+
+spring:
+  cloud:
+    config:
+      enabled: false
+  datasource:
+    main:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pg-site.stoloto.gt/gosloto_site
+      username: finch_user_db1_gt
+      password: xhr6sX62hrWxpMSb
+    bonus-games:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pg-site.stoloto.gt/gosloto_site?currentSchema=bonus-games
+      username: finch_user_db1_gt
+      password: xhr6sX62hrWxpMSb
+    shop:
+      driver-class-name: org.postgresql.Driver
+      url: jdbc:postgresql://pg-shop.stoloto.gt/stoloto_shop_data_gt
+      username: finch_store_user
+      password: KXVaUu7uQS6SREp4
+    winners:
+      driver-class-name: org.postgresql.Driver
+      maxPoolSize: 5
+      minPoolSize: 5
+      connectionTimeout: 10000
+      validationTimeout: 10000
+      url: jdbc:postgresql://pg-winners.stoloto.gt/stoloto_winners_gt
+      username: finch_user_db2_gt
+      password: xhr6sX62hrWxpMSb
+app:
+  redis:
+    host: ${DRAW-REDIS-HOST:redis-draw-service.stoloto.gt}
+    port: ${DRAW-REDIS-PORT:6379}
+    commandTimeout: 100ms
+    ttl: 5m
+    keyPrefix: bonus-game-
+  services:
+    files:
+      url: http://localhost:65211
+    global-model:
+      url: http://10.229.8.140:30342
+    purchaseBackendUrl: http://10.229.8.140:30352
+    purchaseFrontendUrl: http://10.229.8.140:30385
+
+purchase:
+  os:
+    gosloto:
+      frontend:
+        maxConnections: 100
+        timeout:
+          connectionRequest: 120
+          connection: 100
+          socket: 100
+      backend:
+        maxConnections: 100
+        timeout:
+          connectionRequest: 120
+          connection: 100
+          socket: 100
+
+rabbit:
+  bonus:
+    game:
+      buy:
+        purchase:
+          delay: 500
+          thread: 5
+        registration:
+          delay: 500
+          thread: 5
+  client:
+    name: bonus-game
+  connections: 5
+  addresses: rabbitmq.stoloto.gt:5672
+
+ticket:
+  shards: 10
+  bonus:
+    shards: 2
+  index:
+    shard: shard1
+
+tickets:
+  shard1:
+    db:
+      maxPoolSize: 15
+      minPoolSize: 5
+      connectionTimeout: 10000
+      validationTimeout: 10000
+      url: pg-tickets-1.stoloto.gt
+      name: stoloto_tickets_gt
+      port: 5432
+      username: finch_user_db3_gt
+      password: xhr6sX62hrWxpMSb
+  shard2:
+    db:
+      maxPoolSize: 15
+      minPoolSize: 5
+      connectionTimeout: 10000
+      validationTimeout: 10000
+      url: pg-tickets-2.stoloto.gt
+      name: stoloto_tickets_2_gt
+      port: 5432
+      username: finch_user_db3_gt
+      password: xhr6sX62hrWxpMSb
+  shard3:
+    db:
+      maxPoolSize: 15
+      minPoolSize: 5
+      connectionTimeout: 10000
+      validationTimeout: 10000
+      url: pg-tickets-1.stoloto.gt
+      name: stoloto_tickets_gt
+      port: 5432
+      username: finch_user_db3_gt
+      password: xhr6sX62hrWxpMSb
+
+hibernate:
+  dialect: org.hibernate.dialect.PostgreSQLDialect
+  hbm2ddl-auto: validate
+  generate-statistics: false
+  show-sql: false
+  use-outer-join: false
+  configuration-resource-name: ehcache.xml
+  cache-region-factory-class: org.hibernate.cache.ehcache.SingletonEhCacheRegionFactory
+  use-query-cache: true
+  use-second-level-cache: true
+
+draw:
+  service:
+    address: http://10.229.8.140:30348
+    client:
+      read-timeout: 5000
+      connect-request-timeout: 5000
+      connect-timeout: 5000
+      max-connections: 5
+
+shop:
+  db:
+    maxPoolSize: 15
+    minPoolSize: 5
+    connectionTimeout: 10000
+    validationTimeout: 10000
+    url: pg-shop.stoloto.gt
+    name: stoloto_shop_data_gt
+    port: 5432
+    username: finch_store_user
+    password: KXVaUu7uQS6SREp4
+
+watingtickets:
+  cache:
+    storage: redis
+  redis:
+    ttl: 3600000
+    read:
+      host: keydb.keydb.svc.stoloto-v2.gt
+      port: 6379
+    write:
+      host: keydb.keydb.svc.stoloto-v2.gt
+      port: 6379
+
+games-config:
+  individual:
+    minesweeper:
+      gameCode: 1
+      modes:
+        -
+          id: 1
+          price: 9
+          randomPrizeId: 14
+          randomRewardIds: 17
+          description: режим1
+        -
+          id: 2
+          price: 27
+          randomPrizeId: 15
+          randomRewardIds: 17
+          description: режим2
+        -
+          id: 3
+          price: 81
+          randomPrizeId: 16
+          randomRewardIds: 17
+          description: режим3
+    superkuzmich:
+      gameCode: 2
+      modes:
+        -
+          id: 1
+          price: 3
+          randomPrizeId: 1
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 9
+          randomPrizeId: 2
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 27
+          randomPrizeId: 3
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 72
+          randomPrizeId: 4
+          randomRewardIds: 17
+    sweets_carnival:
+      gameCode: 3
+      modes:
+        -
+          id: 1
+          price: 4
+          randomPrizeId: 5
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 12
+          randomPrizeId: 6
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 40
+          randomPrizeId: 7
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 120
+          randomPrizeId: 8
+          randomRewardIds: 17
+    lucky_charge:
+      gameCode: 4
+      modes:
+        -
+          id: 1
+          price: 3
+          randomPrizeId: 9
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 9
+          randomPrizeId: 10
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 30
+          randomPrizeId: 11
+          randomRewardIds: 17
+        -
+          id: 1
+          price: 90
+          randomPrizeId: 12
+          randomRewardIds: 17
+
+prize-calculation:
+  configs:
+    - id: 1
+      ranges:
+        - count: 6
+          interval-end: 3000
+          prize-type: BONUS
+    - id: 2
+      ranges:
+        - count: 18
+          interval-end: 3000
+          prize-type: BONUS
+    - id: 3
+      ranges:
+        - count: 54
+          interval-end: 3000
+          prize-type: BONUS
+    - id: 4
+      ranges:
+        - count: 144
+          interval-end: 3000
+          prize-type: BONUS
+    - id: 5
+      ranges:
+        - count: 4
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 12
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 20
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 6
+      ranges:
+        - count: 12
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 36
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 60
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 7
+      ranges:
+        - count: 40
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 120
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 200
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 8
+      ranges:
+        - count: 120
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 360
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 600
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 9
+      ranges:
+        - count: 3
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 9
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 15
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 10
+      ranges:
+        - count: 9
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 27
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 45
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 11
+      ranges:
+        - count: 30
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 90
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 150
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 12
+      ranges:
+        - count: 90
+          interval-end: 5000
+          prize-type: BONUS
+        - count: 270
+          interval-end: 5500
+          prize-type: BONUS
+        - count: 450
+          interval-end: 5600
+          prize-type: BONUS
+    - id: 13
+      ranges:
+        - count: 3
+          interval-end: 10000
+          prize-type: BONUS
+    - id: 14
+      ranges:
+        - count: 9
+          interval-end: 10000
+          prize-type: BONUS
+    - id: 15
+      ranges:
+        - count: 27
+          interval-end: 10000
+          prize-type: BONUS
+    - id: 16
+      ranges:
+        - count: 81
+          interval-end: 10000
+          prize-type: BONUS
+    - id: 17
+      ranges:
+        - count: 1
+          interval-end: 10000
+          prize-type: RANDOM_PUZZLE_ITEM_NOT_USED

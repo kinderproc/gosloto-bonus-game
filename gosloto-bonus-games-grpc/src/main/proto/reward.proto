@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.reward.grpc";
+option java_multiple_files = true;
+import "gosloto-games-model.proto";
+
+message GetAndApplyRewardsRequestGrpc {
+  NullableIntegerList randomIds = 1;
+  ApplyRewardUserDataGrpc userData = 2;
+}
+
+message ApplyRewardUserDataGrpc {
+  int64 userId = 1;
+  NullableString mobile = 2;
+  NullableString bonusGameSessionUUID = 3;
+  NullableString refillBonusDescription = 4;
+  NullableString refillBonusReason = 5;
+  NullableInt refillBonusLifeTime = 6;
+  NullableInt refillBonusLifeTimeDays = 7;
+}
+
+message ApplyRewardRequestGrpc {
+  RewardsGrpc rewards = 1;
+  ApplyRewardUserDataGrpc userData = 2;
+}
+
+service GrpcRewardService {
+  rpc getRandomRewardsByRandomIds(NullableIntegerList) returns (RewardsGrpc);
+  rpc applyReward(ApplyRewardRequestGrpc) returns (RewardsGrpc);
+  rpc getAndApplyRewards(GetAndApplyRewardsRequestGrpc) returns (RewardsGrpc);
+}

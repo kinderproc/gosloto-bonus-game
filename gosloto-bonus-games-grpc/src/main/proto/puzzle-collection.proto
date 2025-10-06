@@ -1,0 +1,52 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.reward.grpc";
+option java_multiple_files = true;
+import "google/protobuf/empty.proto";
+import "google/protobuf/wrappers.proto";
+import "gosloto-games-model.proto";
+
+message CollectPuzzleAndRefillBonusRequestGrpc {
+  int64 userId = 1;
+  int64 puzzleId = 2;
+  string mobile = 3;
+}
+
+message RarityGrpc {
+  string name = 1;
+  string title = 2;
+  int64 order = 3;
+}
+
+message UserPuzzleWithCollectedCountGrpc {
+  string url = 1;
+  string name = 2;
+  string type = 3;
+  repeated CollectedCountsByRaritiesGrpc collectedCountsByRarities = 4;
+}
+
+message CollectedCountsByRaritiesGrpc {
+  string rarity = 1;
+  int32 collectedCount = 2;
+}
+
+message RandomPuzzleRequest {
+  int32 count = 1;
+  int64 puzzle_id = 2;
+  int64 user_id = 3;
+}
+
+message Puzzle {
+  NullableLong puzzle_id = 1;
+  string url = 2;
+  string description = 3;
+}
+
+service GrpcPuzzleCollectionService {
+  //Временное решение для синхронного начисления пазлов
+  //@deprecated
+  rpc RandomPuzzle(RandomPuzzleRequest) returns (stream Puzzle);
+  rpc collectPuzzleAndRefillBonusToUser(CollectPuzzleAndRefillBonusRequestGrpc) returns (google.protobuf.Empty);
+  rpc getUserCollectionGroupingByType(google.protobuf.Int64Value) returns (stream UserPuzzleWithCollectedCountGrpc);
+  rpc getRarities(NullableBoolean) returns (stream RarityGrpc);
+}

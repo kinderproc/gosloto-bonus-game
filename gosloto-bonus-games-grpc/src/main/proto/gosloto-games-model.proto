@@ -1,0 +1,98 @@
+syntax = "proto3";
+
+option java_package = "org.orglot.gosloto.bonus.games.grpc.model";
+option java_multiple_files = true;
+import "google/protobuf/struct.proto";
+
+message NullableRewardsGrpc {
+  oneof val {
+    RewardsGrpc rewards = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message RewardsGrpc {
+  repeated RewardGrpc reward = 1;
+}
+
+message RewardGrpc {
+  NullableLong id = 1;
+  NullableString url = 2;
+  NullableInt value = 3;
+  NullableString prizeSubType = 4;
+  NullableString type = 5;
+  NullableString description = 6;
+  NullableString name = 7;
+}
+
+message ScalePositionWithPuzzleItemGrpc {
+  int32 price = 1;
+  string puzzleItemId = 2;
+  string url = 3;
+  int64 nominalId = 4;
+}
+
+message NullableInt {
+  oneof val {
+    int32 value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message NullableLong {
+  oneof val {
+    int64 value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message NullableDouble {
+  oneof val {
+    double value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message NullableBoolean {
+  oneof val {
+    bool value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message NullableString {
+  oneof val {
+    string value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message StringList {
+  repeated NullableString data = 1;
+}
+
+message NullableStringList {
+  oneof val {
+    StringList data = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message NullableInteger {
+  oneof val {
+    int32 value = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
+message IntegerList {
+  repeated NullableInteger data = 1;
+}
+
+message NullableIntegerList {
+  oneof val {
+    IntegerList data = 1;
+    google.protobuf.NullValue null = 2;
+  }
+}
+
